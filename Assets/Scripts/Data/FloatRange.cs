@@ -8,6 +8,12 @@ namespace Data {
         public float Max;
 
         public FloatRange(float min, float max) {
+            if (min < max) {
+                Min = max;
+                Max = min;
+                return;
+            }
+            
             Min = min;
             Max = max;
         }
