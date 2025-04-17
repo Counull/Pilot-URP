@@ -1,6 +1,7 @@
 using System;
 using UnityEngine;
 using UnityEngine.InputSystem;
+using UnityEngine.Serialization;
 
 namespace Player {
     public class PlayerInput : MonoBehaviour {
@@ -8,21 +9,26 @@ namespace Player {
 
         public event CursorLockStatusChange OnCursorLockChanged;
 
+        [SerializeField] private bool switchSprint = true;
 
         private InputAction _movement;
         private InputAction _look;
         private InputAction _jump;
+        private HoldOrToggleInput _sprint;
 
 
         public bool CanProcessInput => LockCursor;
         public Vector2 Movement => _movement.ReadValue<Vector2>();
         public Vector2 Look => _look.ReadValue<Vector2>();
 
+        public bool Sprinting => _sprint.IsActive;
+
         /// <summary>
         /// Jump triggered in current update,
         ///*** NOT VALID in fixed update ***
         /// </summary>
         public bool JumpTriggeredInFrame => _jump.WasPerformedThisFrame();
+
 
         public bool Jump { get; private set; }
 
@@ -40,8 +46,10 @@ namespace Player {
             _movement = InputSystem.actions.FindAction("Move");
             _look = InputSystem.actions.FindAction("Look");
             _jump = InputSystem.actions.FindAction("Jump");
+            _sprint = new HoldOrToggleInput(InputSystem.actions.FindAction("Sprint"), switchSprint);
             _jump.performed += ctx => Jump = true;
         }
+
 
         public void JumpExecuteComplete() {
             Jump = false;
@@ -58,12 +66,14 @@ namespace Player {
                 _movement.Enable();
                 _look.Enable();
                 _jump.Enable();
+                _sprint.Action.Enable();
                 return;
             }
 
             _movement.Disable();
             _look.Disable();
             _jump.Disable();
+            _sprint.Action.Disable();
         }
     }
 }

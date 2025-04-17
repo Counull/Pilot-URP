@@ -6,9 +6,12 @@ namespace Player {
     [RequireComponent(typeof(PlayerInput))]
     public class PlayerMovement : MonoBehaviour {
         [Header("Movement")] [SerializeField] private float moveSpeed = 5f;
-        [SerializeField] private float jumpForce = 5f;
+        [SerializeField] private float sprintMult = 2f;
+
+
+        [Header("Jump")] [SerializeField] private float jumpForce = 5f;
         [SerializeField] private int maxJumpCount = 3;
-        [SerializeField] private float jumpInterval;
+        [SerializeField] private float jumpInterval = 0.1f;
 
         [Header("View")] [SerializeField] private Camera eyesCamera;
         [Range(0, 1)] [SerializeField] private float rotateSpeed = 0.5f;
@@ -66,7 +69,7 @@ namespace Player {
         private void Movement() {
             var moveInput = _playerInput.Movement;
             var newMovement = transform.TransformVector(new Vector3(moveInput.x, 0, moveInput.y)) * moveSpeed;
-
+            newMovement *= _playerInput.Sprinting ? sprintMult : 1;
 
             if (_isGrounded) {
                 GroundMovement(moveInput, ref newMovement);
