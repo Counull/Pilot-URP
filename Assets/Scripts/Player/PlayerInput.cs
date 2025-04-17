@@ -17,7 +17,14 @@ namespace Player {
         public bool CanProcessInput => LockCursor;
         public Vector2 Movement => _movement.ReadValue<Vector2>();
         public Vector2 Look => _look.ReadValue<Vector2>();
-        public bool Jump => _jump.triggered;
+
+        /// <summary>
+        /// Jump triggered in current update,
+        ///*** NOT VALID in fixed update ***
+        /// </summary>
+        public bool JumpTriggeredInFrame => _jump.WasPerformedThisFrame();
+
+        public bool Jump { get; private set; }
 
         public bool LockCursor {
             get => !Cursor.visible && Cursor.lockState == CursorLockMode.Locked;
@@ -33,7 +40,13 @@ namespace Player {
             _movement = InputSystem.actions.FindAction("Move");
             _look = InputSystem.actions.FindAction("Look");
             _jump = InputSystem.actions.FindAction("Jump");
+            _jump.performed += ctx => Jump = true;
         }
+
+        public void JumpExecuteComplete() {
+            Jump = false;
+        }
+
 
         private void Start() {
             LockCursor = true;
