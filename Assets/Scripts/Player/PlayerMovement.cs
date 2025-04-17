@@ -69,7 +69,7 @@ namespace Player {
         private void Movement() {
             var moveInput = _playerInput.Movement;
             var newMovement = transform.TransformVector(new Vector3(moveInput.x, 0, moveInput.y)) * moveSpeed;
-            newMovement *= _playerInput.Sprinting ? sprintMult : 1;
+          
 
             if (_isGrounded) {
                 GroundMovement(moveInput, ref newMovement);
